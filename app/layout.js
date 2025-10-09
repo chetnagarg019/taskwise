@@ -27,3 +27,8 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
+//app/api/track/route.js me data liya sara 
+//app/page.js(default vali) isme sare tasks ass kr diye + btn bna diya add task 
+//app/add-task/page.js
+
