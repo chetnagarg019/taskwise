@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { tasks as defaultTasks } from "./data/route"; // default tasks import
+import { tasks as defaultTasks } from "./data/route";
 
 export default function Page() {
   const [tasks, setTasks] = useState([]);
   const router = useRouter();
 
-  // Load tasks (default if localStorage empty)
+  // Load tasks
   useEffect(() => {
     const savedTasks = JSON.parse(localStorage.getItem("tasks"));
     if (!savedTasks || savedTasks.length === 0) {
@@ -18,9 +18,9 @@ export default function Page() {
     }
   }, []);
 
-  // Update task status
+  // Update status
   function updateStatus(id, newStatus) {
-    const updatedTasks = tasks.map(task =>
+    const updatedTasks = tasks.map((task) =>
       task.id === id ? { ...task, status: newStatus } : task
     );
     setTasks(updatedTasks);
@@ -28,43 +28,49 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-6">
-      <h1 className="text-4xl font-bold text-center text-blue-800 mb-8">
-        TaskWise
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-indigo-200 to-blue-300 p-6">
+      {/* Header */}
+      <h1 className="text-5xl font-extrabold text-center text-indigo-800 drop-shadow-md mb-10">
+        🧠 Smart Issue Tracker
       </h1>
 
-      <div className="flex gap-4 mb-4">
+      {/* Buttons */}
+      <div className="flex justify-center gap-4 mb-10">
         <button
           onClick={() => router.push("/add-task")}
-          className="px-4 py-2 bg-white text-black rounded-lg cursor-pointer"
+          className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl text-lg font-semibold shadow-md hover:from-indigo-600 hover:to-blue-600 transition-all"
         >
-          Add Task
+          ➕ Add Task
         </button>
 
         <button
           onClick={() => router.push("/delete-task")}
-          className="px-4 py-2 bg-white text-black rounded-lg cursor-pointer"
+          className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-lg font-semibold shadow-md hover:from-red-600 hover:to-pink-600 transition-all"
         >
-          Delete Task
+          🗑 Delete Task
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Task Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-10">
         {tasks.map((task) => (
           <div
             key={task.id}
-            className={`p-5 rounded-2xl shadow-md hover:shadow-xl transition transform hover:scale-[1.02]
+            className={`p-6 rounded-2xl backdrop-blur-md shadow-lg border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.03]
               ${
                 task.status === "Todo"
-                  ? "bg-red-200"
+                  ? "bg-red-100/80"
                   : task.status === "In Progress"
-                  ? "bg-yellow-200"
-                  : "bg-green-200"
+                  ? "bg-yellow-100/80"
+                  : "bg-green-100/80"
               }`}
           >
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">{task.title}</h3>
-            <p className="text-gray-700 mb-3">{task.description}</p>
-            <p className="text-sm font-medium text-gray-600">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              {task.title}
+            </h3>
+            <p className="text-gray-600 mb-3">{task.description}</p>
+
+            <p className="text-sm font-medium text-gray-700 mb-3">
               Status:{" "}
               <span
                 className={`font-bold ${
@@ -79,22 +85,22 @@ export default function Page() {
               </span>
             </p>
 
-            <div className="flex gap-2 mt-3">
+            <div className="flex flex-wrap gap-2 mt-2">
               <button
-                className="px-2 py-1 bg-white text-black rounded cursor-pointer"
                 onClick={() => updateStatus(task.id, "Todo")}
+                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-red-200 transition"
               >
                 Todo
               </button>
               <button
-                className="px-2 py-1 bg-white text-black rounded cursor-pointer"
                 onClick={() => updateStatus(task.id, "In Progress")}
+                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-yellow-200 transition"
               >
                 In Progress
               </button>
               <button
-                className="px-2 py-1 bg-white text-black rounded cursor-pointer"
                 onClick={() => updateStatus(task.id, "Done")}
+                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-green-200 transition"
               >
                 Done
               </button>
@@ -102,7 +108,13 @@ export default function Page() {
           </div>
         ))}
       </div>
+
+      {/* Empty State */}
+      {tasks.length === 0 && (
+        <p className="text-center text-gray-700 mt-10 text-lg">
+          No tasks available. Add one to get started!
+        </p>
+      )}
     </div>
   );
 }
-

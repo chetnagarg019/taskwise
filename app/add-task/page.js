@@ -1,89 +1,53 @@
-'use client';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AddRecipePage() {
   const router = useRouter();
 
-  // form fields
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [type, setType] = useState('Done');
-  const [extraField, setExtraField] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [type, setType] = useState("Done");
 
-  // submit handler
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  //   // id auto generate from title
-  //   // const id = title.toLowerCase().replace(/\s+/g, '-')+ '-' + Date.now();
-  //   const id = title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+    const id = title.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
+    const newTask = { id, title, description, status: type };
 
+    const existingTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    existingTasks.unshift(newTask);
+    localStorage.setItem("tasks", JSON.stringify(existingTasks));
 
-  //   // new task object
-  //   const newTask = {
-  //     id,
-  //     title,
-  //     description,
-  //     status: type,
-  //     extra: extraField,
-  //   };
-
-
-  //   await fetch("/api/track", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(newTask),
-  //   });
-
-  //   alert('Task uploaded successfully!');
-  //   router.push('/');
-  // };
-
-
-  // Submit handler
-const handleSubmit = (e) => {
-  e.preventDefault();
-
-  const id = title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
-
-  const newTask = { id, title, description, status: type };
-
-  const existingTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  existingTasks.push(newTask);
-  localStorage.setItem("tasks", JSON.stringify(existingTasks));
-
-  alert("Task uploaded successfully!");
-  router.push("/");
-};
-
-
+    alert("Task uploaded successfully!");
+    router.push("/");
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg border">
-        <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">
-          Upload Task
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-indigo-200 px-4">
+      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md border border-blue-200">
+        <h1 className="text-3xl font-extrabold text-center mb-6 text-indigo-700">
+          🚀 Upload Task
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Title */}
           <input
             type="text"
-            placeholder="Title"
+            placeholder="Enter task title..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border px-4 py-2 rounded-lg"
+            className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
             required
           />
 
           {/* Description */}
           <input
             type="text"
-            placeholder="Description"
+            placeholder="Enter task description..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border px-4 py-2 rounded-lg"
+            className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
             required
           />
 
@@ -91,24 +55,22 @@ const handleSubmit = (e) => {
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="w-full border px-4 py-2 rounded-lg"
+            className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
           >
-            <option value="Done">Done</option>
-            <option value="In Progress">In Progress</option>
             <option value="Todo">Todo</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Done">Done</option>
           </select>
 
-        
-          {/* Submit Button */}
+          {/* Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className="w-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white py-3 rounded-lg text-lg font-semibold hover:from-indigo-600 hover:to-blue-600 transition-all shadow-md"
           >
             Upload Task
-          </button> 
+          </button>
         </form>
       </div>
     </div>
   );
 }
-
