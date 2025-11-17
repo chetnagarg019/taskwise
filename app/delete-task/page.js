@@ -2,22 +2,26 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { tasks as defaultTasks } from "../data/route";
+import { loadTasks, saveTasks } from "../utils/storage";
 
-export default function Page() {
-  const [title, setTitle] = useState("");
+export default function DeleteTaskPage() {
   const router = useRouter();
+  const [title, setTitle] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!title.trim()) {
-      alert("Please enter a title");
+      alert("Please enter a task title");
       return;
     }
 
-    const existingTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    const allTasks = [...defaultTasks, ...existingTasks];
+    // Load tasks from localStorage
+    const localTasks = loadTasks();
+    // Merge default tasks with saved tasks for check
+    const allTasks = [...defaultTasks, ...localTasks];
 
+    // Check if the title exists in default tasks
     const isDefault = defaultTasks.some(
       (task) => task.title.toLowerCase() === title.toLowerCase()
     );
@@ -27,17 +31,20 @@ export default function Page() {
       return;
     }
 
-    const updatedTasks = existingTasks.filter(
+    // Filter out the task to delete
+    const updatedTasks = localTasks.filter(
       (task) => task.title.toLowerCase() !== title.toLowerCase()
     );
 
-    if (updatedTasks.length !== existingTasks.length) {
-      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-      alert(`Task "${title}" deleted successfully!`);
-      router.push("/");
-    } else {
+    if (updatedTasks.length === localTasks.length) {
       alert(`Task "${title}" not found!`);
+      return;
     }
+
+    // Save updated tasks to localStorage
+    saveTasks(updatedTasks);
+    alert(`Task "${title}" deleted successfully!`);
+    router.push("/");
   };
 
   return (
@@ -48,17 +55,14 @@ export default function Page() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-           
-            <input
-              type="text"
-              placeholder="Enter task title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full border-2 border-blue-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none px-4 py-2.5 rounded-lg text-gray-700 placeholder-gray-400 transition-all"
-              required
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Enter task title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full border-2 border-blue-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none px-4 py-2.5 rounded-lg text-gray-700 placeholder-gray-400 transition-all"
+            required
+          />
 
           <button
             type="submit"

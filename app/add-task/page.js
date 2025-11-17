@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+// import { tasks as defaultTasks } from "../data/route";
+import { loadTasks,saveTasks } from "../utils/storage";
 
 export default function AddRecipePage() {
   const router = useRouter();
@@ -15,10 +17,9 @@ export default function AddRecipePage() {
     const id = title.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
     const newTask = { id, title, description, status: type };
 
-    const existingTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    const existingTasks = loadTasks();
     existingTasks.unshift(newTask);
-    localStorage.setItem("tasks", JSON.stringify(existingTasks));
-
+   saveTasks(existingTasks)
     alert("Task uploaded successfully!");
     router.push("/");
   };

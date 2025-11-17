@@ -1,30 +1,32 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { tasks as defaultTasks } from "./data/route";
+import { tasks as defaultTasks } from "./data/route"; //data/rote.js me jake tasks utha liye 
+import { loadTasks,saveTasks } from "./utils/storage"; // utils/storage me jake load kr diya tasks ko 
 
 export default function Page() {
   const [tasks, setTasks] = useState([]);
   const router = useRouter();
 
-  // Load tasks
+
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks"));
-    if (!savedTasks || savedTasks.length === 0) {
-      localStorage.setItem("tasks", JSON.stringify(defaultTasks));
-      setTasks(defaultTasks);
-    } else {
-      setTasks(savedTasks);
-    }
-  }, []);
+    const saved = loadTasks() || [];
+    const merged = [
+      ...defaultTasks.filter((dt) => !saved.some((st) => st.id !== dt.id)),
+      ...saved,
+    ];
+    saveTasks(merged);
+    setTasks(merged)
+  },[])
 
   // Update status
+
   function updateStatus(id, newStatus) {
     const updatedTasks = tasks.map((task) =>
       task.id === id ? { ...task, status: newStatus } : task
     );
     setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    saveTasks(updatedTasks);
   }
 
   return (
@@ -38,16 +40,16 @@ export default function Page() {
       <div className="flex justify-center gap-4 mb-10">
         <button
           onClick={() => router.push("/add-task")}
-          className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl text-lg font-semibold shadow-md hover:from-indigo-600 hover:to-blue-600 transition-all"
+          className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl text-lg font-semibold shadow-md hover:from-indigo-600 hover:to-blue-600 transition-all cursor-pointer"
         >
-          ➕ Add Task
+          ➕ Add Task....
         </button>
 
         <button
           onClick={() => router.push("/delete-task")}
-          className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-lg font-semibold shadow-md hover:from-red-600 hover:to-pink-600 transition-all"
+          className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-lg font-semibold shadow-md hover:from-red-600 hover:to-pink-600 transition-all cursor-pointer"
         >
-          🗑 Delete Task
+          🗑 Delete Task....
         </button>
       </div>
 
@@ -58,10 +60,8 @@ export default function Page() {
             key={task.id}
             className={`p-6 rounded-2xl backdrop-blur-md shadow-lg border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.03]
               ${
-                task.status === "Todo"
-                  ? "bg-red-100/80"
-                  : task.status === "In Progress"
-                  ? "bg-yellow-100/80"
+                task.status === "Todo" ? "bg-red-100/80"
+                  : task.status === "In Progress" ? "bg-yellow-100/80"
                   : "bg-green-100/80"
               }`}
           >
@@ -88,19 +88,19 @@ export default function Page() {
             <div className="flex flex-wrap gap-2 mt-2">
               <button
                 onClick={() => updateStatus(task.id, "Todo")}
-                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-red-200 transition"
+                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-red-200 transition cursor-pointer"
               >
                 Todo
               </button>
               <button
                 onClick={() => updateStatus(task.id, "In Progress")}
-                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-yellow-200 transition"
+                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-yellow-200 transition cursor-pointer"
               >
                 In Progress
               </button>
               <button
                 onClick={() => updateStatus(task.id, "Done")}
-                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-green-200 transition"
+                className="px-3 py-1 bg-white/70 text-gray-900 rounded-lg hover:bg-green-200 transition cursor-pointer"
               >
                 Done
               </button>
